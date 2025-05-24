@@ -1,2 +1,7 @@
-fastapi==0.100.0
-hypercorn==0.14.4
+fastapi
+uvicorn
+opencv-python
+Pillow
+torch
+torchvision
+segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
