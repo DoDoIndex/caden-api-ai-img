@@ -1,8 +1,8 @@
-fastapi
-uvicorn
-opencv-python
-Pillow
-torch
-torchvision
-segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
-hypercon
+fastapi==0.104.1
+uvicorn==0.24.0
+opencv-python==4.8.1.78
+Pillow==10.1.0
+torch==2.1.1
+torchvision==0.16.1
+git+https://github.com/facebookresearch/segment-anything.git
+hypercon==0.0.1
