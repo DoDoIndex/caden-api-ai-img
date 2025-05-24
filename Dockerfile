@@ -1,30 +1,36 @@
 FROM python:3.10-slim
 
-WORKDIR /app
-
-# Cài đặt các dependencies hệ thống
+# Cài đặt gói hệ thống cần thiết
 RUN apt-get update && apt-get install -y \
     build-essential \
-    git \
-    libgl1-mesa-glx \
     libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements.txt
+WORKDIR /app
+
+# Copy và cài đặt requirements
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Cài đặt Python packages
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir fastapi==0.104.1 uvicorn==0.24.0 && \
-    pip install --no-cache-dir opencv-python==4.8.1.78 Pillow==10.1.0 && \
-    pip install --no-cache-dir torch==2.1.1 torchvision==0.16.1 --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir git+https://github.com/facebookresearch/segment-anything.git
+# Tạo thư mục models
+RUN mkdir -p models
 
-# Copy source code
-COPY . .
+# Copy mã nguồn (chỉ copy những file cần thiết)
+COPY main.py .
+COPY download_model.py .
+COPY models/ ./models/
+COPY static/ ./static/ 2>/dev/null || true
+COPY templates/ ./templates/ 2>/dev/null || true
+
+# Tải model SAM nếu chưa có
+RUN python download_model.py
 
 # Expose port
 EXPOSE 8000
 
-# Chạy ứng dụng
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
+# Chạy server với hypercorn
+CMD ["hypercorn", "main:app", "--bind", "0.0.0.0:8000"] 
