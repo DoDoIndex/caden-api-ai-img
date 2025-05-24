@@ -6,17 +6,19 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements.txt
 COPY requirements.txt .
 
-# Tạo và kích hoạt môi trường ảo
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
 # Cài đặt Python packages
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir fastapi==0.104.1 uvicorn==0.24.0 && \
+    pip install --no-cache-dir opencv-python==4.8.1.78 Pillow==10.1.0 && \
+    pip install --no-cache-dir torch==2.1.1 torchvision==0.16.1 --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir git+https://github.com/facebookresearch/segment-anything.git
 
 # Copy source code
 COPY . .
