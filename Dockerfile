@@ -21,3 +21,4 @@ COPY . .
 
 # Chạy server với hypercorn (phiên bản cũ không hỗ trợ config nhiều tham số CLI)
 CMD ["hypercorn", "main:app"]
+CMD ["hypercorn", "main:app", "--bind", "0.0.0.0:8000"]
