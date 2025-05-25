@@ -1,30 +1,27 @@
-FROM python:3.12-slim
+FROM python:3.10-slim
 
-# 1. Cài đặt các gói hệ thống cần thiết
+# Cài các thư viện hệ thống cần thiết
 RUN apt-get update && apt-get install -y \
-    git \
-    libgl1-mesa-glx \
+    build-essential \
     libglib2.0-0 \
-    && apt-get clean \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Tạo thư mục làm việc
+# Tạo thư mục app
 WORKDIR /app
 
-# 3. Copy toàn bộ project vào container
+# Copy requirements và cài đặt các thư viện Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy toàn bộ source code
 COPY . .
 
-# 4. Cài đặt pip, wheel
-RUN pip install --upgrade pip setuptools wheel
-
-# 5. Cài đặt phụ thuộc Python
-RUN pip install -r requirements.txt
-
-# 6. Tải trọng số của mô hình Segment Anything (nếu cần)
-# Bạn có thể tải tự động hoặc mount từ volume bên ngoài
-
-# 7. Mở cổng cho FastAPI
+# Mở cổng 8000
 EXPOSE 8000
 
-# 8. Command để khởi chạy server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Khởi chạy FastAPI server bằng Hypercorn
+CMD ["hypercorn", "main:app", "--bind", "0.0.0.0:8000"]
