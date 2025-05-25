@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Cài đặt gói hệ thống cần thiết
+# Cài các thư viện hệ thống cần thiết
 RUN apt-get update && apt-get install -y \
     build-essential \
     libglib2.0-0 \
@@ -10,15 +10,18 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+# Tạo thư mục app
 WORKDIR /app
 
-# Copy và cài đặt requirements
+# Copy requirements và cài đặt các thư viện Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy mã nguồn
+# Copy toàn bộ source code
 COPY . .
 
-# Chạy server với hypercorn (phiên bản cũ không hỗ trợ config nhiều tham số CLI)
-CMD ["hypercorn", "main:app"]
+# Mở cổng 8000
+EXPOSE 8000
+
+# Khởi chạy FastAPI server bằng Hypercorn
 CMD ["hypercorn", "main:app", "--bind", "0.0.0.0:8000"]
