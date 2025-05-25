@@ -1,3 +1,6 @@
+import download_model
+download_model.download_sam_model()
+
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,8 +12,7 @@ from PIL import Image
 import io
 import os
 import base64
-import download_model
-download_model.download_sam_model()
+
 
 
 from segment_anything import sam_model_registry, SamPredictor
